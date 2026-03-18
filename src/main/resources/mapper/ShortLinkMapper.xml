@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.shortlink.mapper.ShortLinkMapper">
+  <resultMap id="BaseResultMap" type="com.example.shortlink.model.ShortLink">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="short_code" jdbcType="VARCHAR" property="shortCode" />
+    <result column="long_url" jdbcType="VARCHAR" property="longUrl" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from short_link
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.example.shortlink.model.ShortLink">
+    insert into short_link (id, short_code, long_url, 
+      create_time, expire_time, status
+      )
+    values (#{id,jdbcType=BIGINT}, #{shortCode,jdbcType=VARCHAR}, #{longUrl,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{expireTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.shortlink.model.ShortLink">
+    update short_link
+    set short_code = #{shortCode,jdbcType=VARCHAR},
+      long_url = #{longUrl,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      expire_time = #{expireTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, short_code, long_url, create_time, expire_time, status
+    from short_link
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, short_code, long_url, create_time, expire_time, status
+    from short_link
+  </select>
+
+    <select id="selectByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select id, short_code, long_url, create_time, expire_time, status
+        from short_link
+        where short_code = #{code,jdbcType=VARCHAR}
+    </select>
+</mapper>

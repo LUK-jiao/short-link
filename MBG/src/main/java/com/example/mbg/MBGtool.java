@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MBGtool {
     public static void main(String[] args) throws Exception {
-        File configFile = new File("/Users/shawluke/IdeaProjects/demo/MBG/src/main/resources/generatorConfig.xml");
+        File configFile = new File("/Users/shawluke/IdeaProjects/short-link/MBG/src/main/resources/generatorConfig.xml");
         List<String> warnings = new ArrayList<String>();
         ConfigurationParser cp = new ConfigurationParser(warnings);
         Configuration config = cp.parseConfiguration(configFile);
