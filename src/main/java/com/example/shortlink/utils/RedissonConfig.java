@@ -17,6 +17,7 @@ public class RedissonConfig {
     public RBloomFilter<String> bloomFilter() {
         RBloomFilter<String> rBloomFilter =  redissonClient.getBloomFilter("short-link");
         rBloomFilter.tryInit(1000000, 0.01);
+        rBloomFilter.add("abc123");
         return rBloomFilter;
     }
 }

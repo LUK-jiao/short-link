@@ -32,4 +32,13 @@ public class RedirectController {
         response.sendRedirect(longUrl);
     }
 
+    @GetMapping("/protect/{code}")
+    public void redirectWithProtect(@PathVariable String code, HttpServletResponse response) throws IOException {
+        log.info("请求路径为:"+ code);
+        String longUrl = shortLinkService.getUrlByCodeWithProtect(code);
+        response.sendRedirect(longUrl);
+    }
+
+
+
 }
