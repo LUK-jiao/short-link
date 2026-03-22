@@ -14,12 +14,8 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.example.shortlink.model.ShortLink">
-    insert into short_link (id, short_code, long_url, 
-      create_time, expire_time, status
-      )
-    values (#{id,jdbcType=BIGINT}, #{shortCode,jdbcType=VARCHAR}, #{longUrl,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{expireTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
-      )
+    insert into short_link (id, short_code, long_url)
+    values (#{id,jdbcType=BIGINT}, #{shortCode,jdbcType=VARCHAR}, #{longUrl,jdbcType=VARCHAR})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.example.shortlink.model.ShortLink">
     update short_link

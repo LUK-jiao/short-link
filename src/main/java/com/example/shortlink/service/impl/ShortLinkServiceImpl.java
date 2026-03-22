@@ -1,13 +1,19 @@
 package com.example.shortlink.service.impl;
 
+import com.example.shortlink.enums.ShortLinkStatus;
 import com.example.shortlink.mapper.ShortLinkMapper;
 import com.example.shortlink.model.ShortLink;
+import com.example.shortlink.model.ShortLinkDTO;
 import com.example.shortlink.service.ShortLinkService;
+import com.example.shortlink.utils.ShortCodeGenerator;
+import com.example.shortlink.utils.SnowflakeIdConfig;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.netty.handler.codec.base64.Base64;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Mapper;
+import org.hashids.Hashids;
 import org.redisson.api.RBloomFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.caffeine.CaffeineCache;
@@ -44,6 +50,15 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
                     "end";
 
     private DefaultRedisScript<Long> unlockScript;
+
+    @Autowired
+    private SnowflakeIdConfig snowflakeIdConfig;
+
+//    @Autowired
+//    private Hashids hashids;
+
+    @Autowired
+    private ShortCodeGenerator shortCodeGenerator;
 
     @PostConstruct
     public void init() {
@@ -140,5 +155,26 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
             }
         }
         return url;
+    }
+
+    @Override
+    public String createShortLink(ShortLinkDTO shortLinkDTO) {
+        long id = snowflakeIdConfig.nextId();
+        String shortCode = shortCodeGenerator.encode(id);
+
+        ShortLink shortLink = new ShortLink();
+        shortLink.setId(id);
+        shortLink.setLongUrl(shortLinkDTO.getLongUrl());
+        shortLink.setShortCode(shortCode);
+        //剩下的时间、状态交由mysql管理
+        //添加到布隆
+        bloomFilter.add(shortCode);
+
+        try{
+            shortLinkMapper.insert(shortLink);
+        }catch (Exception e){
+            throw new RuntimeException("createShortLink error :"  + e.getMessage());
+        }
+        return shortCode;
     }
 }

@@ -16,5 +16,7 @@ public class ShortLink {
 
     private Date expireTime;
 
-    private Byte status;
+    private Date updateTime;
+
+    private int status;
 }
