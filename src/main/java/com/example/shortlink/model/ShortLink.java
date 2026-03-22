@@ -19,4 +19,6 @@ public class ShortLink {
     private Date updateTime;
 
     private int status;
+
+    private Long clickCount;
 }

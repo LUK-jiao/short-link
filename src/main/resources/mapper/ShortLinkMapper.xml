@@ -8,6 +8,8 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime" />
     <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="click_count" jdbcType="BIGINT" property="clickCount" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from short_link
@@ -26,18 +28,25 @@
       status = #{status,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+    <update id="updateClickCount" parameterType="com.example.shortlink.model.ShortLink">
+        update short_link
+        set click_count = #{clickCount,jdbcType=BIGINT}
+        where short_code = #{shortCode,jdbcType=VARCHAR}
+    </update>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select id, short_code, long_url, create_time, expire_time, status
+    select id, short_code, long_url, create_time, expire_time, status, click_count, update_time
     from short_link
     where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, short_code, long_url, create_time, expire_time, status
+    select id, short_code, long_url, create_time, expire_time, status,click_count, update_time
     from short_link
   </select>
 
     <select id="selectByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select id, short_code, long_url, create_time, expire_time, status
+        select id, short_code, long_url, create_time, expire_time, status,click_count, update_time
         from short_link
         where short_code = #{code,jdbcType=VARCHAR}
     </select>

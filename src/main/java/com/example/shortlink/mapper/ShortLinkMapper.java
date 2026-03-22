@@ -18,4 +18,6 @@ public interface ShortLinkMapper {
     int updateByPrimaryKey(ShortLink row);
 
     ShortLink selectByCode(String code);
+
+    int updateClickCount(ShortLink shortLink);
 }

@@ -10,5 +10,22 @@ spring:
     redis:
       host: localhost
       port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: ${kafka.consumer.group-id}
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      max-poll-records: 1000
+    listener:
+      type: batch
 mybatis:
   mapper-locations: classpath:mapper/*.xml
+

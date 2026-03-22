@@ -7,4 +7,6 @@ public class ShortLinkDTO {
 
     private String longUrl;
 
+    private String shortCode;
+
 }

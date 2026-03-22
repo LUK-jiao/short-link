@@ -11,4 +11,6 @@ public interface ShortLinkService {
     String getUrlByCodeWithProtect(String code);
 
     String createShortLink(ShortLinkDTO shortLinkDTO);
+
+    String updateClickCount(ShortLinkDTO shortLinkDTO);
 }

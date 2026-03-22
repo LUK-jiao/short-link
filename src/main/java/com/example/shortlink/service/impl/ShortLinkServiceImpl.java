@@ -5,6 +5,7 @@ import com.example.shortlink.mapper.ShortLinkMapper;
 import com.example.shortlink.model.ShortLink;
 import com.example.shortlink.model.ShortLinkDTO;
 import com.example.shortlink.service.ShortLinkService;
+import com.example.shortlink.utils.KafkaUtils;
 import com.example.shortlink.utils.ShortCodeGenerator;
 import com.example.shortlink.utils.SnowflakeIdConfig;
 import com.github.benmanes.caffeine.cache.Cache;
@@ -16,6 +17,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.hashids.Hashids;
 import org.redisson.api.RBloomFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -54,8 +56,11 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
     @Autowired
     private SnowflakeIdConfig snowflakeIdConfig;
 
-//    @Autowired
-//    private Hashids hashids;
+    @Autowired
+    private KafkaUtils kafkaUtils;
+
+    @Value("${kafka.topic.click}")
+    private String clickTopic;
 
     @Autowired
     private ShortCodeGenerator shortCodeGenerator;
@@ -174,6 +179,17 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
             shortLinkMapper.insert(shortLink);
         }catch (Exception e){
             throw new RuntimeException("createShortLink error :"  + e.getMessage());
+        }
+        return shortCode;
+    }
+
+    @Override
+    public String updateClickCount(ShortLinkDTO shortLinkDTO) {
+        String shortCode = shortLinkDTO.getShortCode();
+        try{
+            kafkaUtils.sendClick(clickTopic,shortCode);
+        }catch (Exception e){
+            throw new RuntimeException("updateClickCount error :"  + e.getMessage());
         }
         return shortCode;
     }
