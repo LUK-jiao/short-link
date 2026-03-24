@@ -11,6 +11,10 @@ public interface ShortLinkMapper {
 
     int insert(ShortLink row);
 
+    int insertBatch(List<ShortLink> rows);
+
+    int insertSelective(ShortLink record);
+
     ShortLink selectByPrimaryKey(Long id);
 
     List<ShortLink> selectAll();

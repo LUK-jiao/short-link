@@ -19,6 +19,15 @@
     insert into short_link (id, short_code, long_url)
     values (#{id,jdbcType=BIGINT}, #{shortCode,jdbcType=VARCHAR}, #{longUrl,jdbcType=VARCHAR})
   </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into short_link (id, short_code, long_url)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT}, #{item.shortCode,jdbcType=VARCHAR}, #{item.longUrl,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
   <update id="updateByPrimaryKey" parameterType="com.example.shortlink.model.ShortLink">
     update short_link
     set short_code = #{shortCode,jdbcType=VARCHAR},

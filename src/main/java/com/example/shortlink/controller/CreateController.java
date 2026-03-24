@@ -25,4 +25,11 @@ public class CreateController {
         return Result.success("create short link success :"+shortCode);
     }
 
+    @PostMapping("/createBatch")
+    public Result createShortLinkBatch(@RequestBody ShortLinkDTO  shortLinkDTO){
+        log.info("createShortLinkBatch:{}", shortLinkDTO);
+        String shortCode = shortLinkService.sendShortLink(shortLinkDTO);
+        return Result.success("send short link :"+shortCode);
+    }
+
 }

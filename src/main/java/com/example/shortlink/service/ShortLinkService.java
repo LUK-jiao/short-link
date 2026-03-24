@@ -3,6 +3,8 @@ package com.example.shortlink.service;
 import com.example.shortlink.model.ShortLink;
 import com.example.shortlink.model.ShortLinkDTO;
 
+import java.util.List;
+
 public interface ShortLinkService {
     String getUrlByCode(String code);
 
@@ -13,4 +15,8 @@ public interface ShortLinkService {
     String createShortLink(ShortLinkDTO shortLinkDTO);
 
     String updateClickCount(ShortLinkDTO shortLinkDTO);
+
+    String sendShortLink(ShortLinkDTO shortLinkDTO);
+
+    int batchInsertShortLink(List<ShortLink> msgs);
 }

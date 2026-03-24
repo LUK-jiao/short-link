@@ -25,6 +25,7 @@ import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -61,6 +62,11 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
 
     @Value("${kafka.topic.click}")
     private String clickTopic;
+
+    @Value("${kafka.topic.createShortLink}")
+    private String createShortLinkTopic;
+
+
 
     @Autowired
     private ShortCodeGenerator shortCodeGenerator;
@@ -108,7 +114,7 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
     @Override
     public String getUrlByCodeWithProtect(String code) {
         //首先是布隆，然后是caffeine，然后是redis，然后是加锁，然后是双检，最后记得释放锁
-        if(!bloomFilter.contains(code)){
+        if(!bloomFilter.contains(code)){//bloom防止缓存穿透
             log.info(String.format("shortcode: %s does not exist", code));
             return null;
         }
@@ -124,7 +130,7 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
             return url;
         }
 
-        String lockkey = "lock:" + code;
+        String lockkey = "lock:" + code;//加锁防止缓存击穿
         String request_id = UUID.randomUUID().toString();
 
         try{
@@ -192,5 +198,36 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
             throw new RuntimeException("updateClickCount error :"  + e.getMessage());
         }
         return shortCode;
+    }
+
+    @Override
+    public String sendShortLink(ShortLinkDTO shortLinkDTO) {
+        long id = snowflakeIdConfig.nextId();
+        String shortCode = shortCodeGenerator.encode(id);
+
+        ShortLink shortLink = new ShortLink();
+        shortLink.setId(id);
+        shortLink.setLongUrl(shortLinkDTO.getLongUrl());
+        shortLink.setShortCode(shortCode);
+
+        try{
+            kafkaUtils.sendShortLink(createShortLinkTopic,shortLink);
+        }catch (Exception e){
+            throw new RuntimeException("sendShortLink error :"  + e.getMessage());
+        }
+        return shortCode;
+    }
+
+    @Override
+    public int batchInsertShortLink(List<ShortLink> msgs) {
+        msgs.forEach(shortLink -> {
+            bloomFilter.add(shortLink.getShortCode());
+        });
+        try{
+            shortLinkMapper.insertBatch(msgs);
+        }catch (Exception e){
+            throw new RuntimeException("batchInsertShortLink error :"  + e.getMessage());
+        }
+        return msgs.size();
     }
 }
