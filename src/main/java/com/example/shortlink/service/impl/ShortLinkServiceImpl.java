@@ -24,7 +24,11 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -209,7 +213,9 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
         shortLink.setId(id);
         shortLink.setLongUrl(shortLinkDTO.getLongUrl());
         shortLink.setShortCode(shortCode);
-
+        Date now = new Date();
+        shortLink.setCreateTime(now);
+        shortLink.setExpireTime(Date.from(now.toInstant().plus(24L, ChronoUnit.HOURS)));
         try{
             kafkaUtils.sendShortLink(createShortLinkTopic,shortLink);
         }catch (Exception e){

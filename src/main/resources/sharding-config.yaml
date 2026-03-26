@@ -1,0 +1,40 @@
+dataSources:
+  ds0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/short_link_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    connectionTimeout: 30000
+    idleTimeout: 600000
+    maxLifetime: 1800000
+    maximumPoolSize: 10
+    minimumIdle: 5
+
+# 分片规则配置
+rules:
+  - !SHARDING
+    # 配置按年分库策略
+    tables:
+      # 表名
+      short_link:
+        #数据节点，所有表名，列出的表都要存在
+        actualDataNodes: ds0.short_link_$->{0..7}
+        #分表策略
+        tableStrategy:
+          #分表类型，单列作为分表键
+          standard:
+            #分表列
+            shardingColumn: short_code
+            #分表算法名称，与下面对应
+            shardingAlgorithmName: table-inline-shortCode
+
+    # 分片算法配置
+    shardingAlgorithms:
+      table-inline-shortCode:
+        type: INLINE
+        props:
+          algorithm-expression: short_link_$->{Math.abs(short_code.hashCode()) % 8}
+
+props:
+  sql-show: true
