@@ -37,4 +37,4 @@ rules:
           algorithm-expression: short_link_$->{Math.abs(short_code.hashCode()) % 8}
 
 props:
-  sql-show: true
+  sql-show: false

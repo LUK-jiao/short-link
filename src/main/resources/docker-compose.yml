@@ -16,7 +16,6 @@ services:
       - zookeeper
     ports:
       - "9092:9092"  # 外部访问用9092
-      - "19092:19092" # 内部通信用19092（新增端口映射）
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
@@ -25,3 +24,12 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://localhost:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-shortlink
+    ports:
+      - "80:80"
+    volumes:
+      - ~/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
