@@ -216,6 +216,7 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
         Date now = new Date();
         shortLink.setCreateTime(now);
         shortLink.setExpireTime(Date.from(now.toInstant().plus(24L, ChronoUnit.HOURS)));
+        shortLink.setUpdateTime(now);
         try{
             kafkaUtils.sendShortLink(createShortLinkTopic,shortLink);
         }catch (Exception e){

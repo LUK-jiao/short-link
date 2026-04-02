@@ -48,7 +48,7 @@ public class SnowflakeIdConfig {
             if (offset <= 5L) {
                 currentTimeStamp = waitUntil(lastTimeStamp);
             } else {
-                throw new RuntimeException("Clock moved backwards");
+                throw new RuntimeException("Clock moved backwards too much");
             }
         }
         //同一毫秒

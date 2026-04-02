@@ -20,7 +20,7 @@ public class ShortCodeGenerator {
             num /= BASE;
         }
         String shortCode = sb.reverse().toString();
-        log.info("generate shortCode : {}", shortCode);
+        log.info("snowflakeId : {} , generate shortCode : {}", snowflakeId,shortCode);
         return shortCode;
     }
 

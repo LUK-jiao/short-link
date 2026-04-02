@@ -29,6 +29,9 @@ spring:
         spring.json.trusted.packages: "com.example.shortlink.model"
     listener:
       type: batch
+      ack-mode: manual
+      concurrency: 3  # 设置消费者线程数
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 

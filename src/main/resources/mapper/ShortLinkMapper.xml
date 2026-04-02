@@ -16,16 +16,18 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.example.shortlink.model.ShortLink">
-    insert into short_link (id, short_code, long_url)
-    values (#{id,jdbcType=BIGINT}, #{shortCode,jdbcType=VARCHAR}, #{longUrl,jdbcType=VARCHAR})
+    insert into short_link (id, short_code, long_url,create_time,expire_time,update_time)
+    values (#{id,jdbcType=BIGINT}, #{shortCode,jdbcType=VARCHAR}, #{longUrl,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP}, #{expireTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+    on duplicate key update status = 7
   </insert>
 
     <insert id="insertBatch" parameterType="java.util.List">
-        insert into short_link (id, short_code, long_url,create_time,expire_time)
+        insert into short_link (id, short_code, long_url,create_time,expire_time,update_time)
         values
         <foreach collection="list" item="item" separator=",">
             (#{item.id,jdbcType=BIGINT}, #{item.shortCode,jdbcType=VARCHAR}, #{item.longUrl,jdbcType=VARCHAR},
-             #{item.createTime,jdbcType=TIMESTAMP}, #{item.expireTime,jdbcType=TIMESTAMP})
+             #{item.createTime,jdbcType=TIMESTAMP}, #{item.expireTime,jdbcType=TIMESTAMP},#{item.updateTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
