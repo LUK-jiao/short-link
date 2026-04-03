@@ -75,6 +75,12 @@
         </root>
     </springProfile>
 
+    <springProfile name="docker">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
     <!-- 特定包的日志级别 -->1
     <logger name="com.example.shortlink" level="INFO"/>
     <logger name="org.springframework.web" level="INFO"/>

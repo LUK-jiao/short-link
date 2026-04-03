@@ -1,0 +1,52 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:sharding-config-docker.yaml
+    password:  123456
+    username: root
+  data:
+    redis:
+      host: host.docker.internal
+      port: 6379
+
+  kafka:
+    bootstrap-servers: kafka:19092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: ${kafka.consumer.group-id}
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      max-poll-records: 1000
+      properties:
+        spring.json.trusted.packages: "com.example.shortlink.model"
+    listener:
+      type: batch
+      ack-mode: manual
+      concurrency: 3  # 设置消费者线程数
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+snowflake:
+  worker-id: ${WORKER_ID:0}
+
+#logging:
+#  level:
+#    org.springdoc: DEBUG
+#    org.springframework.security: DEBUG
+#    org.apache.ibatis: DEBUG
+#    io.lettuce.core: debug
+#    org.springframework.cache: debug
+#    org.apache.shardingsphere: DEBUG  # 开启ShardingSphere核心日志
+#    org.apache.shardingsphere.sql.parser: TRACE  # 可选：解析器日志（更详细）
+#    org.apache.shardingsphere.routing: TRACE  # 可选：路由过程日志
+
+

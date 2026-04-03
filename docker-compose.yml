@@ -6,25 +6,19 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
 
   kafka:
     image: confluentinc/cp-kafka:7.3.2
     container_name: kafka
     depends_on:
       - zookeeper
-    ports:
-      - "9092:9092"  # 外部访问用9092
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      # 内部用19092，外部用9092
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://localhost:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
 
   nginx:
     image: nginx:latest
@@ -33,3 +27,24 @@ services:
       - "80:80"
     volumes:
       - ~/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+
+  shortlink1:
+    image: short-link-app:2.0
+    container_name: shortlink1
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - WORKER_ID=1
+
+  shortlink2:
+    image: short-link-app:2.0
+    container_name: shortlink2
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - WORKER_ID=2
+
+  shortlink3:
+    image: short-link-app:2.0
+    container_name: shortlink3
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - WORKER_ID=3
