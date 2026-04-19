@@ -81,6 +81,13 @@
         </root>
     </springProfile>
 
+    <springProfile name="remote">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ERROR_FILE"/>
+        </root>
+    </springProfile>
+
     <!-- 特定包的日志级别 -->1
     <logger name="com.example.shortlink" level="INFO"/>
     <logger name="org.springframework.web" level="INFO"/>
