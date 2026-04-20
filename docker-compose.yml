@@ -31,28 +31,31 @@ services:
       - ~/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
 
   shortlink1:
-    image: short-link-app:2.0
+    image: short-link-app:3.0
     container_name: shortlink1
     ports:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - WORKER_ID=1
+      - SERVER_PORT=8080
 
   shortlink2:
-    image: short-link-app:2.0
+    image: short-link-app:3.0
     container_name: shortlink2
     ports:
       - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - WORKER_ID=2
+      - SERVER_PORT=8081
 
   shortlink3:
-    image: short-link-app:2.0
+    image: short-link-app:3.0
     container_name: shortlink3
     ports:
       - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - WORKER_ID=3
+      - SERVER_PORT=8082
