@@ -2,9 +2,9 @@ dataSources:
   ds0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://host.docker.internal:3306/short_link_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
-    username: root
-    password: 123456
+    jdbcUrl: jdbc:mysql://mysql:3306/short_link?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
+    username: shortlink
+    password: shortlink_password_change_me
     connectionTimeout: 30000
     idleTimeout: 600000
     maxLifetime: 1800000

@@ -1,11 +1,21 @@
-version: '3'
+version: '3.8'
+
 services:
+  # ==================== 基础设施 ====================
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.2
     container_name: zookeeper
+    ports:
+      - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
+    networks:
+      - shortlink-net
+    restart: unless-stopped
 
   kafka:
     image: confluentinc/cp-kafka:7.3.2
@@ -18,20 +28,53 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://100.112.194.13:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://localhost:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  nginx:
-    image: nginx:latest
-    container_name: nginx-shortlink
-    ports:
-      - "80:80"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
     volumes:
-      - ~/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - shortlink-net
+    restart: unless-stopped
 
+  # ==================== 数据层 ====================
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_change_me
+      MYSQL_DATABASE: short_link
+      MYSQL_USER: shortlink
+      MYSQL_PASSWORD: shortlink_password_change_me
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    networks:
+      - shortlink-net
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass redis_password_change_me
+    volumes:
+      - redis-data:/data
+    networks:
+      - shortlink-net
+    restart: unless-stopped
+
+  # ==================== 应用层 ====================
   shortlink1:
-    image: short-link-app:3.0
+    image: short-link-app:4.0
     container_name: shortlink1
     ports:
       - "8080:8080"
@@ -39,9 +82,19 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - WORKER_ID=1
       - SERVER_PORT=8080
-
+      - LOG_PATH=/app/logs
+    volumes:
+      - shortlink1-logs:/app/logs
+    depends_on:
+      - mysql
+      - redis
+      - kafka
+    networks:
+      - shortlink-net
+    restart: unless-stopped
+ 
   shortlink2:
-    image: short-link-app:3.0
+    image: short-link-app:4.0
     container_name: shortlink2
     ports:
       - "8081:8081"
@@ -49,9 +102,19 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - WORKER_ID=2
       - SERVER_PORT=8081
+      - LOG_PATH=/app/logs
+    volumes:
+      - shortlink2-logs:/app/logs
+    depends_on:
+      - mysql
+      - redis
+      - kafka
+    networks:
+      - shortlink-net
+    restart: unless-stopped
 
   shortlink3:
-    image: short-link-app:3.0
+    image: short-link-app:4.0
     container_name: shortlink3
     ports:
       - "8082:8082"
@@ -59,3 +122,45 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - WORKER_ID=3
       - SERVER_PORT=8082
+      - LOG_PATH=/app/logs
+    volumes:
+      - shortlink3-logs:/app/logs
+    depends_on:
+      - mysql
+      - redis
+      - kafka
+    networks:
+      - shortlink-net
+    restart: unless-stopped
+
+  # ==================== 网关层 ====================
+  nginx:
+    image: nginx:latest
+    container_name: nginx-shortlink
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - shortlink1
+      - shortlink2
+      - shortlink3
+    networks:
+      - shortlink-net
+    restart: unless-stopped
+
+# ==================== 网络 ====================
+networks:
+  shortlink-net:
+    driver: bridge
+
+# ==================== 数据卷 ====================
+volumes:
+  mysql-data:
+  redis-data:
+  kafka-data:
+  zookeeper-data:
+  zookeeper-logs:
+  shortlink1-logs:
+  shortlink2-logs:
+  shortlink3-logs:

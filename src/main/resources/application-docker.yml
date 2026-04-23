@@ -4,12 +4,13 @@ spring:
   datasource:
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
     url: jdbc:shardingsphere:classpath:sharding-config-docker.yaml
-    password:  123456
-    username: root
+    # password: 123456  # 使用 ShardingSphere 配置，这两行不生效
+    # username: root
   data:
     redis:
-      host: host.docker.internal
+      host: redis
       port: 6379
+      password: redis_password_change_me
 
   kafka:
     bootstrap-servers: kafka:19092

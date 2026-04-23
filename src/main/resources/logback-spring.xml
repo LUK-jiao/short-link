@@ -78,6 +78,7 @@
     <springProfile name="docker">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ERROR_FILE"/>
         </root>
     </springProfile>
 

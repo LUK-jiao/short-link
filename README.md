@@ -243,3 +243,59 @@ docker compose ps
 docker compose logs -f shortlink1
 ```
 
+---
+
+## 10. 短链接使用说明（用户指南）
+
+### 创建短链接
+
+在终端或命令行工具中执行：
+
+```bash
+curl -X POST http://studywithus.dpdns.org/createBatch \
+  -H "Content-Type: application/json" \
+  -d '{"longUrl":"你的原始网址"}'
+```
+
+**示例：**
+```bash
+curl -X POST http://studywithus.dpdns.org/createBatch \
+  -H "Content-Type: application/json" \
+  -d '{"longUrl":"https://www.baidu.com"}'
+```
+
+**返回结果：**
+```json
+{"success":true,"message":"send short link :zhIdWLGHg0"}
+```
+
+**记住短码**：`zhIdWLGHg0`（冒号后面的部分）
+
+---
+
+### 使用短链接
+
+在浏览器地址栏输入：
+
+```
+http://studywithus.dpdns.org/protect/zhIdWLGHg0
+```
+
+**原理**：把短码拼在 `/protect/` 后面，浏览器会自动跳转到原始网址。
+
+---
+
+### 总结
+
+| 你做的事 | 结果 |
+|---------|------|
+| 发送命令创建短链接 | 得到一个短码（如 `zhIdWLGHg0`） |
+| 浏览器打开 `http://studywithus.dpdns.org/protect/短码` | 自动跳转到原始网址 |
+
+---
+
+### 注意事项
+
+- 短链接有效期 **24 小时**，过期失效
+- 原始网址要完整，包含 `https://` 或 `http://`
+
