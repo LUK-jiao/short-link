@@ -174,17 +174,10 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
 
     @Override
     public String createShortLink(ShortLinkDTO shortLinkDTO) {
-        long id = snowflakeIdConfig.nextId();
-        String shortCode = shortCodeGenerator.encode(id);
-
         ShortLink shortLink = new ShortLink();
-        shortLink.setId(id);
-        shortLink.setLongUrl(shortLinkDTO.getLongUrl());
-        shortLink.setShortCode(shortCode);
-        //剩下的时间、状态交由mysql管理
+        String shortCode = buildShortLinkWithShortCode(shortLinkDTO,shortLink);
         //添加到布隆
         bloomFilter.add(shortCode);
-
         try{
             shortLinkMapper.insert(shortLink);
         }catch (Exception e){
@@ -206,10 +199,19 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
 
     @Override
     public String sendShortLink(ShortLinkDTO shortLinkDTO) {
+        ShortLink shortLink = new ShortLink();
+        String shortCode = buildShortLinkWithShortCode(shortLinkDTO, shortLink);
+        try{
+            kafkaUtils.sendShortLink(createShortLinkTopic,shortLink);
+        }catch (Exception e){
+            throw new RuntimeException("sendShortLink error :"  + e.getMessage());
+        }
+        return shortCode;
+    }
+
+    private String buildShortLinkWithShortCode(ShortLinkDTO shortLinkDTO, ShortLink shortLink) {
         long id = snowflakeIdConfig.nextId();
         String shortCode = shortCodeGenerator.encode(id);
-
-        ShortLink shortLink = new ShortLink();
         shortLink.setId(id);
         shortLink.setLongUrl(shortLinkDTO.getLongUrl());
         shortLink.setShortCode(shortCode);
@@ -217,11 +219,6 @@ public class ShortLinkServiceImpl  implements ShortLinkService {
         shortLink.setCreateTime(now);
         shortLink.setExpireTime(Date.from(now.toInstant().plus(24L, ChronoUnit.HOURS)));
         shortLink.setUpdateTime(now);
-        try{
-            kafkaUtils.sendShortLink(createShortLinkTopic,shortLink);
-        }catch (Exception e){
-            throw new RuntimeException("sendShortLink error :"  + e.getMessage());
-        }
         return shortCode;
     }
 

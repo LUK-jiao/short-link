@@ -102,6 +102,12 @@
             <version>5.5.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.linkflow</groupId>
+            <artifactId>linkflow-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <build>
