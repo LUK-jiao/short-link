@@ -18,14 +18,14 @@ public class CreateController {
     @Autowired
     private ShortLinkService shortLinkService;
 
-    @PostMapping("/create")
-    public Result createShortLink(@RequestBody ShortLinkDTO  shortLinkDTO){
-        log.info("createShortLink:{}", shortLinkDTO);
-        String shortCode = shortLinkService.createShortLink(shortLinkDTO);
-        return Result.success("create short link success :"+shortCode);
-    }
+    // @PostMapping("/create")
+    // public Result createShortLink(@RequestBody ShortLinkDTO  shortLinkDTO){
+    //     log.info("createShortLink:{}", shortLinkDTO);
+    //     String shortCode = shortLinkService.createShortLink(shortLinkDTO);
+    //     return Result.success("create short link success :"+shortCode);
+    // }
 
-    @PostMapping("/createBatch")
+    @PostMapping("/create")
     public Result createShortLinkBatch(@RequestBody ShortLinkDTO  shortLinkDTO){
         log.info("createShortLinkBatch:{}", shortLinkDTO);
         String shortCode = shortLinkService.sendShortLink(shortLinkDTO);

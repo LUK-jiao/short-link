@@ -74,7 +74,7 @@ services:
 
   # ==================== 应用层 ====================
   shortlink1:
-    image: short-link-app:4.0
+    image: short-link-app:4.1
     container_name: shortlink1
     ports:
       - "8080:8080"
@@ -94,7 +94,7 @@ services:
     restart: unless-stopped
  
   shortlink2:
-    image: short-link-app:4.0
+    image: short-link-app:4.1
     container_name: shortlink2
     ports:
       - "8081:8081"
@@ -114,7 +114,7 @@ services:
     restart: unless-stopped
 
   shortlink3:
-    image: short-link-app:4.0
+    image: short-link-app:4.1
     container_name: shortlink3
     ports:
       - "8082:8082"
