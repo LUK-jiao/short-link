@@ -11,9 +11,7 @@ import com.linkflow.api.dto.shortlink.ShortLinkResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
 @DubboService
 @Slf4j
 public class ShortLinkApiImpl implements ShortLinkApi {
@@ -26,39 +24,55 @@ public class ShortLinkApiImpl implements ShortLinkApi {
 
     @Override
     public Result<ShortLinkResultDTO> createShortLink(ShortLinkCreateDTO shortLinkCreateDTO) {
-        log.info("ShortLinkApi.createShortLink:{}", shortLinkCreateDTO);
+        log.info("ShortLinkApi.createShortLink: {}", shortLinkCreateDTO);
+
         String longUrl = shortLinkCreateDTO.getLongUrl();
         ShortLinkDTO shortLinkDTO = new ShortLinkDTO();
-        ShortLinkResultDTO shortLinkResultDTO = new ShortLinkResultDTO();
         shortLinkDTO.setLongUrl(longUrl);
 
-        try{
+        try {
             String shortCode = shortLinkService.createShortLink(shortLinkDTO);
-            shortLinkResultDTO.setShortCode(shortCode);
-            shortLinkResultDTO.setSuccess(true);
-            shortLinkResultDTO.setLongUrl(shortLinkCreateDTO.getLongUrl());
-        } catch(Exception e){
-            log.error("ShortLinkApi.createShortLink error :{}",e.getMessage());
-            shortLinkResultDTO.setSuccess(false);
-            shortLinkResultDTO.setErrorMessage(e.getMessage());
+
+            ShortLinkResultDTO resultDTO = new ShortLinkResultDTO();
+            resultDTO.setShortCode(shortCode);
+            resultDTO.setLongUrl(longUrl);
+            resultDTO.setSuccess(true);
+
+            log.info("ShortLinkApi.createShortLink result: {}", resultDTO);
+            return Result.success(resultDTO);
+        } catch (Exception e) {
+            log.error("ShortLinkApi.createShortLink error: {}", e.getMessage(), e);
+
+            ShortLinkResultDTO resultDTO = new ShortLinkResultDTO();
+            resultDTO.setSuccess(false);
+            resultDTO.setErrorMessage(e.getMessage());
+
+            return Result.fail(resultDTO.getErrorMessage());
         }
-        log.info("ShortLinkApi.createShortLink return :{}",shortLinkResultDTO);
-        return  Result.success(shortLinkResultDTO);
     }
 
     @Override
     public Result<String> getUrlByCode(String shortCode) {
-        log.info("ShortLinkApi.getUrlByCode shortCode = {}", shortCode);
+        log.info("ShortLinkApi.getUrlByCode shortCode: {}", shortCode);
+
         ShortLink shortLink = shortLinkMapper.selectByCode(shortCode);
-        if(shortLink == null){
-            return Result.fail("no such record");
+        if (shortLink == null) {
+            log.warn("ShortLinkApi.getUrlByCode: shortCode not found");
+            return Result.fail("短链不存在");
         }
-        log.info("ShortLinkApi.getUrlByCode longUrl = {}", shortLink.getLongUrl());
+
+        log.info("ShortLinkApi.getUrlByCode longUrl: {}", shortLink.getLongUrl());
         return Result.success(shortLink.getLongUrl());
     }
 
     @Override
-    public Result<Boolean> exists(String s) {
-        return null; //TODO 这个托7的
+    public Result<Boolean> exists(String shortCode) {
+        log.info("ShortLinkApi.exists shortCode: {}", shortCode);
+
+        ShortLink shortLink = shortLinkMapper.selectByCode(shortCode);
+        boolean exists = shortLink != null;
+
+        log.info("ShortLinkApi.exists result: {}", exists);
+        return Result.success(exists);
     }
 }

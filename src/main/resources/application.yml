@@ -38,6 +38,17 @@ mybatis:
 snowflake:
   worker-id: 1
 
+dubbo:
+  application:
+    name: short-link-provider
+  registry:
+    address: nacos://localhost:8848
+  protocol:
+    name: dubbo
+    port: 20883
+  scan:
+    base-packages: com.example.shortlink.api.impl
+
 #logging:
 #  level:
 #    org.springdoc: DEBUG
