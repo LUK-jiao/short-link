@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @DubboService
+@Service
 @Slf4j
 @Service
 public class ShortLinkApiImpl implements ShortLinkApi {
