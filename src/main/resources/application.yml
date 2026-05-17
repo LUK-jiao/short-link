@@ -42,10 +42,13 @@ dubbo:
   application:
     name: short-link-provider
   registry:
+    parameters:
+      namespace: linkflow
     address: nacos://localhost:8848
   protocol:
     name: dubbo
-    port: 20883
+    host: ${DUBBO_HOST:10.250.246.71}
+    port: 20881
   scan:
     base-packages: com.example.shortlink.api.impl
 
@@ -59,5 +62,3 @@ dubbo:
 #    org.apache.shardingsphere: DEBUG  # 开启ShardingSphere核心日志
 #    org.apache.shardingsphere.sql.parser: TRACE  # 可选：解析器日志（更详细）
 #    org.apache.shardingsphere.routing: TRACE  # 可选：路由过程日志
-
-

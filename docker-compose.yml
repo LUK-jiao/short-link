@@ -22,6 +22,25 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
+  nacos:
+    image: nacos/nacos-server:latest
+    ports:
+      - "8080:8080"
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    environment:
+      MODE: standalone
+      PREFER_HOST_MODE: ip
+      NACOS_AUTH_ENABLE: "false"
+      NACOS_AUTH_IDENTITY_KEY: serverIdentity
+      NACOS_AUTH_IDENTITY_VALUE: nacos
+      NACOS_AUTH_TOKEN: y5Ct0qhV07lXWX8LVE+MOfbwruAk9IKAnqhHgXDa8+Q=
+      JVM_XMS: 512m
+      JVM_XMX: 512m
+      JVM_XMN: 256m
+      TIME_ZONE: Asia/Shanghai
+
   nginx:
     image: nginx:latest
     container_name: nginx-shortlink
