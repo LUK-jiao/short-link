@@ -38,6 +38,20 @@ mybatis:
 snowflake:
   worker-id: ${WORKER_ID:0}
 
+dubbo:
+  application:
+    name: short-link-provider
+  registry:
+    parameters:
+      namespace: linkflow
+    address: nacos://nacos:8848
+  protocol:
+    name: dubbo
+    host: ${DUBBO_HOST:shortlink1}
+    port: 20881
+  scan:
+    base-packages: com.example.shortlink.api.impl
+
 #logging:
 #  level:
 #    org.springdoc: DEBUG
@@ -48,5 +62,4 @@ snowflake:
 #    org.apache.shardingsphere: DEBUG  # 开启ShardingSphere核心日志
 #    org.apache.shardingsphere.sql.parser: TRACE  # 可选：解析器日志（更详细）
 #    org.apache.shardingsphere.routing: TRACE  # 可选：路由过程日志
-
 

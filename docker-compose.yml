@@ -1,80 +1,60 @@
-version: '3'
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.2
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  kafka:
-    image: confluentinc/cp-kafka:7.3.2
-    container_name: kafka
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://100.112.194.13:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  nacos:
-    image: nacos/nacos-server:latest
-    ports:
-      - "8080:8080"
-      - "8848:8848"
-      - "9848:9848"
-      - "9849:9849"
-    environment:
-      MODE: standalone
-      PREFER_HOST_MODE: ip
-      NACOS_AUTH_ENABLE: "false"
-      NACOS_AUTH_IDENTITY_KEY: serverIdentity
-      NACOS_AUTH_IDENTITY_VALUE: nacos
-      NACOS_AUTH_TOKEN: y5Ct0qhV07lXWX8LVE+MOfbwruAk9IKAnqhHgXDa8+Q=
-      JVM_XMS: 512m
-      JVM_XMX: 512m
-      JVM_XMN: 256m
-      TIME_ZONE: Asia/Shanghai
-
   nginx:
     image: nginx:latest
     container_name: nginx-shortlink
     ports:
-      - "80:80"
+      - "18080:80"
     volumes:
-      - ~/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ~/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - linkflow-net
+    depends_on:
+      shortlink1:
+        condition: service_started
+      shortlink2:
+        condition: service_started
+      shortlink3:
+        condition: service_started
 
   shortlink1:
     image: short-link-app:3.0
     container_name: shortlink1
-    ports:
-      - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - WORKER_ID=1
-      - SERVER_PORT=8080
+      SPRING_PROFILES_ACTIVE: docker
+      WORKER_ID: 1
+      SERVER_PORT: 8080
+      DUBBO_HOST: shortlink1
+    networks:
+      - linkflow-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   shortlink2:
     image: short-link-app:3.0
     container_name: shortlink2
-    ports:
-      - "8081:8081"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - WORKER_ID=2
-      - SERVER_PORT=8081
+      SPRING_PROFILES_ACTIVE: docker
+      WORKER_ID: 2
+      SERVER_PORT: 8081
+      DUBBO_HOST: shortlink2
+    networks:
+      - linkflow-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   shortlink3:
     image: short-link-app:3.0
     container_name: shortlink3
-    ports:
-      - "8082:8082"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - WORKER_ID=3
-      - SERVER_PORT=8082
+      SPRING_PROFILES_ACTIVE: docker
+      WORKER_ID: 3
+      SERVER_PORT: 8082
+      DUBBO_HOST: shortlink3
+    networks:
+      - linkflow-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  linkflow-net:
+    external: true
